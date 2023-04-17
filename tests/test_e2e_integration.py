@@ -54,3 +54,29 @@ def test_e2e_integration(get_people: tuple[list[Result], int]) -> None:
 def test_api() -> None:
     response: Any = app.test_client().get("/all").get_json()
     assert response
+
+
+@fixture
+def nickname():
+    return "Test123"
+
+
+def test_custom_character_creation(nickname) -> None:
+    response: Any = (
+        app.test_client()
+        .post("/custom-tallest-character", json={"nickname": nickname})
+        .get_json()
+    )
+    assert response["nickname"] == nickname
+
+
+def test_custom_character_retrieval(nickname) -> None:
+    response: Any = (
+        app.test_client().get(f"/custom-tallest-character/{nickname}").get_json()
+    )
+    assert response["nickname"] == nickname
+
+
+def test_custom_character_deletion(nickname) -> None:
+    response: Any = app.test_client().delete(f"/custom-tallest-character/{nickname}")
+    assert response.status_code == 200
